@@ -1,0 +1,131 @@
+name: Goshuin
+options:
+  deploymentTarget:
+    iOS: "17.0"
+  developmentLanguage: ja
+  knownRegions: [ja, en, zh-Hans, zh-Hant, ko, es, de, fr, pt-BR, it, nl]
+settings:
+  base:
+    APP_ID: com.hgsldswk.goshuin
+    APP_STORE_ID: "6837715327"
+    MARKETING_VERSION: "1.0.1"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_VERSION: "5.0"
+    CODE_SIGN_STYLE: Automatic
+targets:
+  Goshuin:
+    type: application
+    platform: iOS
+    sources: [Goshuin, Shared]
+    dependencies:
+      - target: GoshuinWidget
+        embed: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_ID)
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+      configs:
+        Release:
+          CODE_SIGN_STYLE: Manual
+          CODE_SIGN_IDENTITY: Apple Distribution
+          PROVISIONING_PROFILE_SPECIFIER: Goshuin AppStore
+    entitlements:
+      path: Goshuin/Goshuin.entitlements
+      properties: {}
+    info:
+      path: Goshuin/Info.plist
+      properties:
+        CFBundleDisplayName: 御朱印帳
+        CFBundleDevelopmentRegion: ja
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        ITSAppUsesNonExemptEncryption: false
+        NSSupportsLiveActivities: true
+        APP_STORE_ID: $(APP_STORE_ID)
+        CFBundleURLTypes:
+          - CFBundleURLName: com.hgsldswk.goshuin
+            CFBundleURLSchemes: [goshuin]
+        NSCameraUsageDescription: 紙の御朱印を撮影して、この端末に保存します。
+        CFBundleDocumentTypes:
+          - CFBundleTypeName: Goshuin Route
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Owner
+            LSItemContentTypes: [com.hgsldswk.goshuin.route]
+        UTExportedTypeDeclarations:
+          - UTTypeIdentifier: com.hgsldswk.goshuin.route
+            UTTypeDescription: Goshuin Route
+            UTTypeConformsTo: [public.json]
+            UTTypeTagSpecification:
+              public.filename-extension: [goshuinroute]
+          - UTTypeIdentifier: com.hgsldswk.goshuin.backup
+            UTTypeDescription: Goshuin Backup
+            UTTypeConformsTo: [public.data]
+            UTTypeTagSpecification:
+              public.filename-extension: [goshuinbackup]
+  GoshuinWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - GoshuinWidget
+      - path: Shared
+        includes: [L10n.swift, PilgrimageActivity.swift, Localizable.xcstrings]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_ID).widget
+        TARGETED_DEVICE_FAMILY: "1"
+        APPLICATION_EXTENSION_API_ONLY: YES
+      configs:
+        Release:
+          CODE_SIGN_STYLE: Manual
+          CODE_SIGN_IDENTITY: Apple Distribution
+          PROVISIONING_PROFILE_SPECIFIER: Goshuin Widget AppStore
+    entitlements:
+      path: GoshuinWidget/GoshuinWidget.entitlements
+      properties: {}
+    info:
+      path: GoshuinWidget/Info.plist
+      properties:
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleDisplayName: 御朱印帳
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+  GoshuinTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [GoshuinTests, Shared]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_ID).tests
+        GENERATE_INFOPLIST_FILE: YES
+  GoshuinUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [GoshuinUITests]
+    dependencies:
+      - target: Goshuin
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_ID).uitests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: Goshuin
+schemes:
+  Goshuin:
+    build:
+      targets:
+        Goshuin: all
+        GoshuinTests: [test]
+    test:
+      config: Debug
+      targets: [GoshuinTests]
+  GoshuinUI:
+    build:
+      targets:
+        Goshuin: all
+        GoshuinUITests: [test]
+    test:
+      config: Debug
+      targets: [GoshuinUITests]
